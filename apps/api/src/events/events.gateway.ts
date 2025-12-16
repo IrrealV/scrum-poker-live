@@ -19,8 +19,10 @@ export class EventsGateway
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('EventsGateway');
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   afterInit(server: Server) {
-    this.logger.log('🚀 WebSocket Gateway Initialized');
+    this.logger.log(`
+      🚀 WebSocket Gateway Initialized`);
   }
 
   handleConnection(client: Socket) {
