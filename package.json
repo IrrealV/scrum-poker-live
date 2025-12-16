@@ -1,0 +1,16 @@
+{
+  "name": "scrum-poker-live",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun --filter '*' dev",
+    "build": "bun --filter '*' build"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}
