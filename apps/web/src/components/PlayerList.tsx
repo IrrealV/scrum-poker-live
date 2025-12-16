@@ -1,4 +1,5 @@
 import { Player } from '@/types/room';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 interface PlayerListProps {
   players: Player[];
@@ -11,12 +12,17 @@ export default function PlayerList({
   currentUserId,
   isRevealed,
 }: PlayerListProps) {
+  const [parent] = useAutoAnimate();
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full max-w-4xl mb-12">
+    <div
+      ref={parent}
+      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full max-w-4xl mb-12"
+    >
       {players.map((p) => (
         <div
           key={p.id}
-          className={`relative p-4 rounded-xl border-2 flex flex-col items-center justify-center transition-all
+          className={`animate-enter-room relative p-4 rounded-xl border-2 flex flex-col items-center justify-center transition-all
             ${
               p.id === currentUserId
                 ? 'border-blue-500 bg-blue-900/20'
@@ -25,7 +31,6 @@ export default function PlayerList({
             ${p.vote && !isRevealed ? 'animate-pulse border-yellow-500/50' : ''}
           `}
         >
-          {/* Avatar Placeholder */}
           <div className="w-10 h-10 rounded-full bg-linear-to-br from-gray-600 to-gray-800 flex items-center justify-center font-bold mb-2">
             {p.name.charAt(0).toUpperCase()}
           </div>
@@ -34,12 +39,11 @@ export default function PlayerList({
             {p.name}
           </span>
 
-          {/* Estado del Voto */}
           <div className="mt-2 h-8 flex items-center justify-center">
             {isRevealed && p.vote ? (
               <span className="text-xl font-bold text-green-400">{p.vote}</span>
             ) : p.vote ? (
-              <span className="text-2xl">🃏</span> // Carta boca abajo
+              <span className="text-2xl">🃏</span>
             ) : (
               <span className="text-xs text-gray-500 italic">Pensando...</span>
             )}
