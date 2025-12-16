@@ -5,6 +5,7 @@ import { useSocket } from '@/hooks/useSocket';
 import Landing from '@/components/Landing';
 import GameTable from '@/components/GameTable'; // <--- Importar
 import { Room } from '@/types/room';
+import toast from 'react-hot-toast';
 
 export default function Home() {
   const { socket, isConnected } = useSocket();
@@ -17,19 +18,29 @@ export default function Home() {
       setRoom(newRoom);
     });
 
+    socket.on('user_left', (data: { name: string }) => {
+      toast(`${data.name} ha abandonado la sala`, {
+        icon: '👋',
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+    });
+
     socket.on('room_updated', (updatedRoom: Room) => {
       // <--- Escuchar actualizaciones
       setRoom(updatedRoom);
     });
 
-    socket.on('error', (err: { message: string }) => {
-      alert(err.message);
-    });
+    socket.on('error', (err: { message: string }) => toast.error(err.message));
 
     return () => {
       socket.off('room_joined');
       socket.off('room_updated');
       socket.off('error');
+      socket.off('user_left');
     };
   }, [socket]);
 
@@ -40,7 +51,7 @@ export default function Home() {
   // Función placeholder para votar (la implementaremos en el backend enseguida)
   const handleVote = (card: string) => {
     console.log('Votando:', card);
-    // TODO: socket?.emit("vote", { roomId: room?.id, card });
+    socket?.emit('vote', { roomId: room?.id, card });
   };
 
   if (!isConnected)

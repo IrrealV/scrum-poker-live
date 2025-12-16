@@ -23,6 +23,7 @@ export default function Landing({ onCreate, onJoin }: LandingProps) {
           <input
             type="text"
             value={name}
+            maxLength={10}
             onChange={(e) => setName(e.target.value)}
             className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 outline-none transition"
             placeholder="Ej: Maelle"
@@ -42,13 +43,14 @@ export default function Landing({ onCreate, onJoin }: LandingProps) {
             <input
               type="text"
               value={roomId}
+              maxLength={4}
               onChange={(e) => setRoomId(e.target.value.toUpperCase())}
               className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white text-center tracking-widest uppercase focus:ring-2 focus:ring-purple-500 outline-none text-sm"
               placeholder="CÓDIGO"
             />
             <button
               onClick={() => name && roomId && onJoin(name, roomId)}
-              disabled={!name || !roomId}
+              disabled={!name || !roomId || roomId.length !== 4}
               className="w-full py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-semibold text-white text-sm transition"
             >
               Unirse

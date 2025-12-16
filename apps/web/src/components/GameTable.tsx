@@ -13,12 +13,11 @@ export default function GameTable({
   currentUserId,
   onVote,
 }: GameTableProps) {
-  // Encontrar mi usuario para saber qué he votado
   const me = room.players.find((p) => p.id === currentUserId);
 
   return (
     <div className="flex flex-col items-center w-full min-h-screen pt-10 pb-40 px-4">
-      {/* Cabecera de la Sala */}
+      {/* Cabecera... (igual) */}
       <div className="flex flex-col items-center mb-10">
         <div className="bg-gray-800 px-6 py-2 rounded-full border border-gray-700 mb-4">
           <span className="text-gray-400 mr-2">Sala:</span>
@@ -26,22 +25,19 @@ export default function GameTable({
             {room.id}
           </span>
         </div>
-
-        {/* Aquí irán los controles de Admin (Revelar/Resetear) más tarde */}
       </div>
 
-      {/* Zona de Juego */}
       <PlayerList
         players={room.players}
         currentUserId={currentUserId}
         isRevealed={room.isRevealed}
       />
 
-      {/* Baraja (Solo visible si no se han revelado las cartas) */}
+      {/* Solo mostramos la baraja si NO se han revelado las cartas */}
       {!room.isRevealed && (
         <VotingDeck
           onVote={onVote}
-          selectedValue={me?.vote || null}
+          currentVote={me?.vote || null} // <--- Pasamos el voto actual
           disabled={false}
         />
       )}

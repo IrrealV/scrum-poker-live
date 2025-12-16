@@ -50,4 +50,33 @@ export class EventsGateway {
       client.emit(error, { message: 'No se pudo unir a la sala' });
     }
   }
+
+  @SubscribeMessage('vote')
+  handleVote(
+    @MessageBody() data: { roomId: string; card: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    try {
+      const room = this.roomsService.vote(data.roomId, client.id, data.card);
+      // Emitimos a todos para que vean que este usuario ya tiene carta boca abajo
+      this.server.to(room.id).emit('room_updated', room);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  handleDisconnect(client: Socket) {
+    const result = this.roomsService.leaveRoom(client.id);
+
+    if (result) {
+      if (result.room) {
+        // Emitimos notificación PRIMERO
+        this.server
+          .to(result.roomId)
+          .emit('user_left', { name: result.leaverName });
+        // Luego actualizamos la sala (para que desaparezca de la lista)
+        this.server.to(result.roomId).emit('room_updated', result.room);
+      }
+    }
+  }
 }
