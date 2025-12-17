@@ -74,6 +74,36 @@ export class RoomsService {
     return room;
   }
 
+  revealCards(roomId: string, adminSocketId: string): Room {
+    const room = this.rooms.get(roomId);
+    if (!room) throw new Error('Sala no encontrada');
+
+    // Verificación de admin
+    const requestor = room.players.find((p) => p.id === adminSocketId);
+    if (!requestor || !requestor.isAdmin) {
+      throw new Error('Solo el administrador puede revelar las cartas');
+    }
+
+    room.isRevealed = true;
+    return room;
+  }
+
+  resetRoom(roomId: string, adminSocketId: string): Room {
+    const room = this.rooms.get(roomId);
+    if (!room) throw new Error('Sala no encontrada');
+
+    const requestor = room.players.find((p) => p.id === adminSocketId);
+    if (!requestor || !requestor.isAdmin) {
+      throw new Error('Solo el administrador puede reiniciar la mesa');
+    }
+
+    // Reseteamos estado
+    room.isRevealed = false;
+    // Limpiamos los votos de todos los jugadores
+    room.players.forEach((p) => (p.vote = null));
+    return room;
+  }
+
   // Generador de IDs cortos (ej: "A7B2")
   private generateRoomId(): string {
     return Math.random().toString(36).substring(2, 6).toUpperCase();

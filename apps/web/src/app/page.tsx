@@ -44,14 +44,20 @@ export default function Home() {
     };
   }, [socket]);
 
-  const handleCreate = (name: string) => socket?.emit('create_room', { name });
-  const handleJoin = (name: string, roomId: string) =>
-    socket?.emit('join_room', { roomId, name });
-
-  // Función placeholder para votar (la implementaremos en el backend enseguida)
+  const handleCreate = (name: string) => socket?.emit("create_room", { name });
+  const handleJoin = (name: string, roomId: string) => socket?.emit("join_room", { roomId, name });
+  
   const handleVote = (card: string) => {
-    console.log('Votando:', card);
-    socket?.emit('vote', { roomId: room?.id, card });
+    if (room?.id) socket?.emit("vote", { roomId: room.id, card });
+  };
+
+  // NUEVAS FUNCIONES DE ADMIN
+  const handleReveal = () => {
+    if (room?.id) socket?.emit("reveal_cards", { roomId: room.id });
+  };
+
+  const handleReset = () => {
+    if (room?.id) socket?.emit("reset_room", { roomId: room.id });
   };
 
   if (!isConnected)
@@ -69,6 +75,8 @@ export default function Home() {
           room={room}
           currentUserId={socket?.id || ''}
           onVote={handleVote}
+          onReveal={handleReveal}
+          onReset={handleReset}
         />
       )}
     </main>

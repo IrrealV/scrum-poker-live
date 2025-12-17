@@ -79,4 +79,30 @@ export class EventsGateway {
       }
     }
   }
+
+  @SubscribeMessage('reveal_cards')
+  handleRevealCards(
+    @MessageBody() data: { roomId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    try {
+      const room = this.roomsService.revealCards(data.roomId, client.id);
+      this.server.to(room.id).emit('room_updated', room);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  @SubscribeMessage('reset_room')
+  handleResetRoom(
+    @MessageBody() data: { roomId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    try {
+      const room = this.roomsService.resetRoom(data.roomId, client.id);
+      this.server.to(room.id).emit('room_updated', room);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
