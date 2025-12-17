@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import Landing from '@/components/Landing';
-import GameTable from '@/components/GameTable';
+import GameTable from '@/features/game/GameContainer';
 import { Room } from '@/types/room';
 import toast from 'react-hot-toast';
 

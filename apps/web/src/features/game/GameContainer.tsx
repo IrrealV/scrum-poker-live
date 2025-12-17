@@ -1,5 +1,5 @@
 import { Room } from "@/types/room";
-import GameUI from "./GameUI";
+import GameUI from "./ui/GameLayout";
 import toast from "react-hot-toast"; // Necesario para el error
 
 interface GameTableProps {
@@ -10,7 +10,7 @@ interface GameTableProps {
   onReset?: () => void;
 }
 
-export default function GameTable({ room, currentUserId, onVote, onReveal, onReset }: GameTableProps) {
+export default function GameContainer({ room, currentUserId, onVote, onReveal, onReset }: GameTableProps) {
   const me = room.players.find((p) => p.id === currentUserId);
   const isAdmin = !!me?.isAdmin;
 

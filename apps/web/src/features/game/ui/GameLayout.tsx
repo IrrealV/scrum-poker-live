@@ -15,7 +15,7 @@ interface GameUIProps {
   };
 }
 
-export default function GameUI({ room, currentUserId, isAdmin, average, actions }: GameUIProps) {
+export default function GameLayout({ room, currentUserId, isAdmin, average, actions }: GameUIProps) {
   const copyRoomId = () => {
     navigator.clipboard.writeText(room.id);
     toast.success("¡Código copiado al portapapeles!");
