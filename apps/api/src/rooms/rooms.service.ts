@@ -21,6 +21,15 @@ export class RoomsService {
     const room = this.rooms.get(roomId);
     if (!room) throw new Error('Sala no encontrada');
 
+    // VALIDACIÓN NUEVA: Límite de capacidad
+    if (room.players.length >= 10) {
+      // Buscamos si el jugador ya estaba (reconexión)
+      const isReconnecting = room.players.some((p) => p.id === socketId);
+      if (!isReconnecting) {
+        throw new Error('La sala está llena (Máx. 10 jugadores)');
+      }
+    }
+
     const existingPlayer = room.players.find((p) => p.id === socketId);
     if (!existingPlayer) {
       room.players.push({

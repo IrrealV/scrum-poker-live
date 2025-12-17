@@ -1,5 +1,5 @@
-import { Player } from '@/types/room';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { Player } from "@/types/room";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 interface PlayerListProps {
   players: Player[];
@@ -7,46 +7,39 @@ interface PlayerListProps {
   isRevealed: boolean;
 }
 
-export default function PlayerList({
-  players,
-  currentUserId,
-  isRevealed,
-}: PlayerListProps) {
+export default function PlayerList({ players, currentUserId, isRevealed }: PlayerListProps) {
   const [parent] = useAutoAnimate();
 
   return (
-    <div
-      ref={parent}
-      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full max-w-4xl mb-12"
-    >
+    // CAMBIO: Usamos Flexbox en lugar de Grid para centrar filas dinámicamente
+    <div ref={parent} className="flex flex-wrap justify-center gap-4 w-full max-w-6xl px-4">
       {players.map((p) => (
         <div
           key={p.id}
-          className={`animate-enter-room relative p-4 rounded-xl border-2 flex flex-col items-center justify-center transition-all
-            ${
-              p.id === currentUserId
-                ? 'border-blue-500 bg-blue-900/20'
-                : 'border-gray-700 bg-gray-800'
-            }
-            ${p.vote && !isRevealed ? 'animate-pulse border-yellow-500/50' : ''}
+          className={`animate-enter-room relative flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 w-24 sm:w-32
+            ${p.id === currentUserId ? "bg-black/40 ring-2 ring-blue-400/50 transform scale-105" : "bg-black/20 hover:bg-black/30"}
           `}
         >
-          <div className="w-10 h-10 rounded-full bg-linear-to-br from-gray-600 to-gray-800 flex items-center justify-center font-bold mb-2">
-            {p.name.charAt(0).toUpperCase()}
+          <div className="mb-2 text-gray-300 font-bold text-xs bg-black/50 px-2 py-0.5 rounded-full shadow-sm truncate max-w-full">
+             {p.name} {p.isAdmin && "👑"}
           </div>
 
-          <span className="font-medium text-white truncate max-w-full">
-            {p.name}
-          </span>
-
-          <div className="mt-2 h-8 flex items-center justify-center">
-            {isRevealed && p.vote ? (
-              <span className="text-xl font-bold text-green-400">{p.vote}</span>
-            ) : p.vote ? (
-              <span className="text-2xl">🃏</span>
-            ) : (
-              <span className="text-xs text-gray-500 italic">Pensando...</span>
-            )}
+          {/* CARTA CON ANIMACIÓN FLIP 3D */}
+          <div className={`
+             relative w-14 h-20 sm:w-16 sm:h-24 rounded-lg flex items-center justify-center shadow-2xl transition-all duration-700 preserve-3d
+             ${/* Aplicamos rotación si está revelada */ ""}
+             ${isRevealed && p.vote ? "rotate-y-180 bg-white" : "bg-linear-to-br from-red-700 to-red-900 border-2 border-white/20"}
+             ${p.vote && !isRevealed ? "translate-y-2 shadow-black/50" : ""}
+             ${!p.vote ? "opacity-30 border-dashed border-gray-500 bg-transparent" : ""}
+          `}>
+             {isRevealed && p.vote ? (
+               // TRUCO: Rotamos el texto también 180deg para que al girar la carta, el número se vea derecho
+               <span className="text-2xl font-black font-mono text-gray-900 rotate-y-180 backface-hidden">{p.vote}</span>
+             ) : p.vote ? (
+               <div className="w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
+             ) : (
+                <span className="text-2xl opacity-0">.</span>
+             )}
           </div>
         </div>
       ))}

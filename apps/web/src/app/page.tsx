@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSocket } from '@/hooks/useSocket';
 import Landing from '@/components/Landing';
-import GameTable from '@/components/GameTable'; // <--- Importar
+import GameTable from '@/components/GameTable';
 import { Room } from '@/types/room';
 import toast from 'react-hot-toast';
 
@@ -34,13 +34,18 @@ export default function Home() {
       setRoom(updatedRoom);
     });
 
-    socket.on('error', (err: { message: string }) => toast.error(err.message));
-
+    socket.on("error", (err: { message: string }) => {
+      console.log("Error recibido del socket:", err); // <--- AÑADE ESTO PARA DEPURAR EN CONSOLA
+      toast.error(err.message, {
+        duration: 4000,
+        icon: '🚫'
+      });
+    });
     return () => {
       socket.off('room_joined');
       socket.off('room_updated');
-      socket.off('error');
       socket.off('user_left');
+      socket.off('error');
     };
   }, [socket]);
 

@@ -40,14 +40,16 @@ export class EventsGateway {
         client.id,
       );
 
-      // CORRECCIÓN: await aquí también
       await client.join(room.id);
-
       client.emit('room_joined', room);
       this.server.to(room.id).emit('room_updated', room);
     } catch (error) {
-      // Si falla, enviamos error (el catch captura cualquier excepción del servicio)
-      client.emit(error, { message: 'No se pudo unir a la sala' });
+      // FIX CRÍTICO: Enviamos el mensaje REAL del error (ej: "Sala llena")
+      // Si error es un objeto Error, sacamos .message, si no, un genérico.
+      const message =
+        error instanceof Error ? error.message : 'Error desconocido al unirse';
+
+      client.emit('error', { message });
     }
   }
 
