@@ -18,6 +18,7 @@
         "@nestjs/platform-express": "^11.0.1",
         "@nestjs/platform-socket.io": "^11.1.9",
         "@nestjs/websockets": "^11.1.9",
+        "@scrum-poker/shared": "workspace:*",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
         "socket.io": "^4.8.1",
@@ -54,6 +55,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@formkit/auto-animate": "^0.9.0",
+        "@scrum-poker/shared": "workspace:*",
         "next": "16.0.10",
         "react": "19.2.1",
         "react-dom": "19.2.1",
@@ -77,6 +79,13 @@
         "tailwindcss": "^4",
         "ts-node": "^10.9.2",
         "typescript": "^5",
+      },
+    },
+    "packages/shared": {
+      "name": "@scrum-poker/shared",
+      "version": "1.0.0",
+      "devDependencies": {
+        "typescript": "^5.0.0",
       },
     },
   },
@@ -418,6 +427,8 @@
     "@playwright/test": ["@playwright/test@1.57.0", "", { "dependencies": { "playwright": "1.57.0" }, "bin": { "playwright": "cli.js" } }, "sha512-6TyEnHgd6SArQO8UO2OMTxshln3QMWBtPGrOCgs3wVEmQmwyuNtB10IZMfmYDE0riwNR1cu4q+pPcxMVtaG3TA=="],
 
     "@rtsao/scc": ["@rtsao/scc@1.1.0", "", {}, "sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g=="],
+
+    "@scrum-poker/shared": ["@scrum-poker/shared@workspace:packages/shared"],
 
     "@sinclair/typebox": ["@sinclair/typebox@0.34.41", "", {}, "sha512-6gS8pZzSXdyRHTIqoqSVknxolr1kzfy4/CeDnrzsVz8TTIWUbOBr6gnzOmTYJ3eXQNh4IYHIGi5aIL7sOZ2G/g=="],
 
