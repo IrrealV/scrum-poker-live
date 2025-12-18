@@ -64,10 +64,10 @@ export default function Home() {
     return (
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center animate-fade-in-up">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--primary-light)] rounded-2xl mb-4 animate-pulse">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-(--primary-light) rounded-2xl mb-4 animate-pulse">
             <span className="text-3xl">🃏</span>
           </div>
-          <p className="text-[var(--text-secondary)] font-medium">Conectando...</p>
+          <p className="text-(--text-secondary) font-medium">Conectando...</p>
         </div>
       </main>
     );
