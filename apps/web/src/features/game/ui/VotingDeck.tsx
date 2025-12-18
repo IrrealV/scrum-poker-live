@@ -1,19 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import { DeckType, DECKS } from '@/types/room';
 
 interface VotingDeckProps {
   onVote: (value: string) => void;
   currentVote: string | null;
   disabled: boolean;
+  deckType: DeckType;
 }
 
-const CARDS = [
-  '0', '0.5', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?', '☕',
-];
-
-export default function VotingDeck({ onVote, currentVote, disabled }: VotingDeckProps) {
+export default function VotingDeck({ onVote, currentVote, disabled, deckType }: VotingDeckProps) {
   const [localSelection, setLocalSelection] = useState<string | null>(null);
+  const cards = DECKS[deckType];
 
   const handleConfirm = () => {
     if (localSelection) {
@@ -42,11 +41,11 @@ export default function VotingDeck({ onVote, currentVote, disabled }: VotingDeck
   return (
     <div className="fixed bottom-0 left-0 w-full bg-white border-t border-(--border) shadow-lg py-5 px-2 animate-slide-up">
       <div className="max-w-4xl mx-auto">
-        {/* Single row: Cards + Selection info + Confirm button */}
+        {/* Single row: Cards + Confirm button */}
         <div className="flex items-center justify-center gap-2">
           {/* Cards - All in one line */}
           <div className="flex items-end gap-1.5 pt-3 overflow-visible">
-            {CARDS.map((card) => {
+            {cards.map((card) => {
               const isSelected = localSelection === card;
               
               return (

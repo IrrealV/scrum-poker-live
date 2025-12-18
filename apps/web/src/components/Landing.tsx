@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { DeckType, DECK_LABELS } from '@/types/room';
 
 interface LandingProps {
-  onCreate: (name: string) => void;
+  onCreate: (name: string, deckType: DeckType) => void;
   onJoin: (name: string, roomId: string) => void;
 }
 
@@ -11,11 +12,12 @@ export default function Landing({ onCreate, onJoin }: LandingProps) {
   const [name, setName] = useState('');
   const [roomId, setRoomId] = useState('');
   const [mode, setMode] = useState<'create' | 'join'>('create');
+  const [deckType, setDeckType] = useState<DeckType>('fibonacci');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (mode === 'create' && name) {
-      onCreate(name);
+      onCreate(name, deckType);
     } else if (mode === 'join' && name && roomId.length === 4) {
       onJoin(name, roomId);
     }
@@ -85,6 +87,28 @@ export default function Landing({ onCreate, onJoin }: LandingProps) {
               Unirse
             </button>
           </div>
+
+          {/* Deck Type Selector (only when creating) */}
+          {mode === 'create' && (
+            <div className="animate-fade-in-up">
+              <label 
+                htmlFor="deckType" 
+                className="block text-sm font-medium text-(--text-secondary) mb-2"
+              >
+                Tipo de baraja
+              </label>
+              <select
+                id="deckType"
+                value={deckType}
+                onChange={(e) => setDeckType(e.target.value as DeckType)}
+                className="input w-full cursor-pointer"
+              >
+                {(Object.keys(DECK_LABELS) as DeckType[]).map((type) => (
+                  <option key={type} value={type}>{DECK_LABELS[type]}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Room Code (only when joining) */}
           {mode === 'join' && (

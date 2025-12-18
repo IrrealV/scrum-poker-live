@@ -1,44 +1,69 @@
 import { Injectable } from '@nestjs/common';
-import { Room } from './interfaces/room.interface';
+import { Room, DeckType } from './interfaces/room.interface';
 
 @Injectable()
 export class RoomsService {
   // Almacén en memoria: ID Sala -> Objeto Room
   private rooms: Map<string, Room> = new Map();
 
-  createRoom(playerName: string, socketId: string): Room {
+  createRoom(playerName: string, socketId: string, sessionToken: string, deckType: DeckType = 'fibonacci'): Room {
     const roomId = this.generateRoomId();
     const newRoom: Room = {
       id: roomId,
-      players: [{ id: socketId, name: playerName, vote: null, isAdmin: true }],
+      topic: null,
+      deckType,
+      players: [{ 
+        id: socketId, 
+        sessionToken,
+        name: playerName, 
+        vote: null, 
+        isAdmin: true 
+      }],
       isRevealed: false,
     };
     this.rooms.set(roomId, newRoom);
     return newRoom;
   }
 
-  joinRoom(roomId: string, playerName: string, socketId: string): Room {
+  joinRoom(roomId: string, playerName: string, socketId: string, sessionToken: string): Room {
     const room = this.rooms.get(roomId);
     if (!room) throw new Error('Sala no encontrada');
 
-    // VALIDACIÓN NUEVA: Límite de capacidad
-    if (room.players.length >= 10) {
-      // Buscamos si el jugador ya estaba (reconexión)
-      const isReconnecting = room.players.some((p) => p.id === socketId);
-      if (!isReconnecting) {
-        throw new Error('La sala está llena (Máx. 10 jugadores)');
-      }
+    // Buscar si el jugador ya existe por sessionToken (reconexión)
+    const existingPlayer = room.players.find((p) => p.sessionToken === sessionToken);
+    
+    if (existingPlayer) {
+      // Reconexión: actualizar socket ID, mantener estado (voto, admin)
+      existingPlayer.id = socketId;
+      return room;
     }
 
-    const existingPlayer = room.players.find((p) => p.id === socketId);
-    if (!existingPlayer) {
-      room.players.push({
-        id: socketId,
-        name: playerName,
-        vote: null,
-        isAdmin: false,
-      });
+    // Nuevo jugador: verificar capacidad
+    if (room.players.length >= 10) {
+      throw new Error('La sala está llena (Máx. 10 jugadores)');
     }
+
+    room.players.push({
+      id: socketId,
+      sessionToken,
+      name: playerName,
+      vote: null,
+      isAdmin: false,
+    });
+    
+    return room;
+  }
+
+  // Reconectar a una sala específica (para F5)
+  reconnect(roomId: string, sessionToken: string, socketId: string): Room | null {
+    const room = this.rooms.get(roomId);
+    if (!room) return null;
+
+    const player = room.players.find((p) => p.sessionToken === sessionToken);
+    if (!player) return null;
+
+    // Actualizar socket ID
+    player.id = socketId;
     return room;
   }
 
@@ -54,7 +79,7 @@ export class RoomsService {
       const playerIndex = room.players.findIndex((p) => p.id === socketId);
 
       if (playerIndex !== -1) {
-        const leaverName = room.players[playerIndex].name; // Guardamos el nombre antes de borrar
+        const leaverName = room.players[playerIndex].name;
         room.players.splice(playerIndex, 1);
 
         if (room.players.length === 0) {
@@ -87,7 +112,6 @@ export class RoomsService {
     const room = this.rooms.get(roomId);
     if (!room) throw new Error('Sala no encontrada');
 
-    // Verificación de admin
     const requestor = room.players.find((p) => p.id === adminSocketId);
     if (!requestor || !requestor.isAdmin) {
       throw new Error('Solo el administrador puede revelar las cartas');
@@ -106,10 +130,22 @@ export class RoomsService {
       throw new Error('Solo el administrador puede reiniciar la mesa');
     }
 
-    // Reseteamos estado
     room.isRevealed = false;
-    // Limpiamos los votos de todos los jugadores
     room.players.forEach((p) => (p.vote = null));
+    return room;
+  }
+
+  // Actualizar el tema de la sala (solo admin)
+  updateTopic(roomId: string, adminSocketId: string, topic: string): Room {
+    const room = this.rooms.get(roomId);
+    if (!room) throw new Error('Sala no encontrada');
+
+    const requestor = room.players.find((p) => p.id === adminSocketId);
+    if (!requestor || !requestor.isAdmin) {
+      throw new Error('Solo el administrador puede cambiar el tema');
+    }
+
+    room.topic = topic;
     return room;
   }
 

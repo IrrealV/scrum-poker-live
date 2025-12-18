@@ -5,6 +5,7 @@ import PlayerList from "./PlayerList";
 import VotingDeck from "./VotingDeck";
 import Confetti from "./Confetti";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 interface GameUIProps {
   room: Room;
@@ -15,13 +16,28 @@ interface GameUIProps {
     vote: (card: string) => void;
     reveal: () => void;
     reset: () => void;
+    updateTopic?: (topic: string) => void;
   };
 }
 
 export default function GameLayout({ room, currentUserId, isAdmin, average, actions }: GameUIProps) {
+  const [topicInput, setTopicInput] = useState(room.topic || '');
+
   const copyRoomId = () => {
     navigator.clipboard.writeText(room.id);
     toast.success("¡Código copiado!");
+  };
+
+  const handleTopicBlur = () => {
+    if (actions.updateTopic && topicInput !== room.topic) {
+      actions.updateTopic(topicInput);
+    }
+  };
+
+  const handleTopicKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      (e.target as HTMLInputElement).blur();
+    }
   };
 
   // Dividir jugadores: 5 arriba y 5 abajo
@@ -38,7 +54,7 @@ export default function GameLayout({ room, currentUserId, isAdmin, average, acti
       <Confetti isRevealed={room.isRevealed} />
 
       {/* Header Bar */}
-      <header className="w-full max-w-4xl flex items-center justify-between mb-8 animate-fade-in-up">
+      <header className="w-full max-w-4xl flex items-center justify-between mb-4 animate-fade-in-up">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <span className="text-2xl">🃏</span>
@@ -58,10 +74,30 @@ export default function GameLayout({ room, currentUserId, isAdmin, average, acti
             {room.id}
           </span>
           <span className="text-(--text-muted) group-hover:text-(--primary) transition-colors">
-            📋
+          📋
           </span>
         </button>
       </header>
+
+      {/* Topic Section */}
+      <div className="w-full max-w-4xl mb-6 animate-fade-in-up">
+        {isAdmin ? (
+          <input
+            type="text"
+            value={topicInput}
+            onChange={(e) => setTopicInput(e.target.value)}
+            onBlur={handleTopicBlur}
+            onKeyDown={handleTopicKeyDown}
+            placeholder="📝 Escribe el tema a estimar (ej: JIRA-123)"
+            className="w-full px-4 py-3 text-center bg-white border border-(--border) rounded-xl text-sm font-medium text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) focus:border-transparent transition-all"
+            maxLength={100}
+          />
+        ) : (
+          <div className="w-full px-4 py-3 text-center bg-(--background-alt) rounded-xl text-sm font-medium text-(--text-primary)">
+            {room.topic || <span className="text-(--text-muted)">Sin tema definido</span>}
+          </div>
+        )}
+      </div>
 
       {/* Game Area */}
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-6">
@@ -157,6 +193,7 @@ export default function GameLayout({ room, currentUserId, isAdmin, average, acti
           onVote={actions.vote}
           currentVote={room.players.find(p => p.id === currentUserId)?.vote || null}
           disabled={false}
+          deckType={room.deckType}
         />
       )}
     </div>
