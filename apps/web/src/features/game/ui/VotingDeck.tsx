@@ -1,105 +1,88 @@
+'use client';
+
 import { useState } from 'react';
 
 interface VotingDeckProps {
   onVote: (value: string) => void;
-  currentVote: string | null; // El voto YA confirmado en el servidor
+  currentVote: string | null;
   disabled: boolean;
 }
 
 const CARDS = [
-  '0',
-  '0.5',
-  '1',
-  '2',
-  '3',
-  '5',
-  '8',
-  '13',
-  '20',
-  '40',
-  '100',
-  '?',
-  '☕',
+  '0', '0.5', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?', '☕',
 ];
 
-export default function VotingDeck({
-  onVote,
-  currentVote,
-  disabled,
-}: VotingDeckProps) {
-  // Estado local para la selección PREVIA a confirmar
+export default function VotingDeck({ onVote, currentVote, disabled }: VotingDeckProps) {
   const [localSelection, setLocalSelection] = useState<string | null>(null);
 
   const handleConfirm = () => {
     if (localSelection) {
       onVote(localSelection);
-      setLocalSelection(null); // Reseteamos selección local tras confirmar
+      setLocalSelection(null);
     }
   };
 
-  // Si ya votaste (currentVote existe), mostramos mensaje de éxito
+  // Already voted state
   if (currentVote) {
     return (
-      <div className="fixed bottom-0 left-0 w-full bg-green-900/90 backdrop-blur-md border-t border-green-700 p-8 text-center animate-slide-up">
-        <h3 className="text-2xl font-bold text-white mb-2">¡Voto Enviado!</h3>
-        <p className="text-green-200">
-          Has seleccionado la carta:{' '}
-          <span className="font-bold text-white text-xl">{currentVote}</span>
-        </p>
-        <p className="text-sm text-gray-400 mt-2">
-          Esperando a que el Admin revele las cartas...
-        </p>
+      <div className="fixed bottom-0 left-0 w-full bg-(--success-light) border-t border-(--success) py-4 px-4 animate-slide-up">
+        <div className="max-w-md mx-auto flex items-center justify-center gap-3">
+          <span className="text-xl">✅</span>
+          <span className="text-sm font-medium text-(--text-primary)">
+            Votaste: <span className="font-bold text-lg">{currentVote}</span>
+          </span>
+          <span className="text-xs text-(--text-muted)">
+            — Esperando revelar...
+          </span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-gray-900/95 backdrop-blur-md border-t border-gray-700 p-6 pb-8 transition-all duration-300">
-      <div className="max-w-5xl mx-auto flex flex-col items-center">
-        {/* Cabecera de Selección */}
-        <div className="flex items-center gap-4 mb-6 h-12">
-          {localSelection ? (
-            <>
-              <span className="text-gray-300 text-lg">
-                Has seleccionado:{' '}
-                <span className="font-bold text-white text-2xl ml-2">
-                  {localSelection}
-                </span>
-              </span>
-              <button
-                onClick={handleConfirm}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-full font-bold shadow-lg shadow-blue-500/30 transition-all transform hover:scale-105 active:scale-95"
-              >
-                CONFIRMAR
-              </button>
-            </>
-          ) : (
-            <span className="text-gray-500 italic">
-              Selecciona una carta para votar...
-            </span>
-          )}
-        </div>
+    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-(--border) shadow-lg py-5 px-2 animate-slide-up">
+      <div className="max-w-4xl mx-auto">
+        {/* Single row: Cards + Selection info + Confirm button */}
+        <div className="flex items-center justify-center gap-2">
+          {/* Cards - All in one line */}
+          <div className="flex items-end gap-1.5 pt-3 overflow-visible">
+            {CARDS.map((card) => {
+              const isSelected = localSelection === card;
+              
+              return (
+                <button
+                  key={card}
+                  onClick={() => setLocalSelection(card)}
+                  disabled={disabled}
+                  className={`
+                    shrink-0
+                    w-9 h-12 sm:w-10 sm:h-14
+                    rounded-lg
+                    font-bold text-sm sm:text-base
+                    transition-all duration-200
+                    border-2
+                    ${isSelected
+                      ? 'bg-(--primary) text-white border-(--primary) -translate-y-1.5 shadow-md shadow-(--primary)/30'
+                      : 'bg-white text-(--text-primary) border-(--border) hover:border-(--primary) hover:-translate-y-0.5'
+                    }
+                    ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                  `}
+                >
+                  {card}
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Cartas */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-          {CARDS.map((card) => (
+          {/* Confirm button - appears when selected */}
+          {localSelection && (
             <button
-              key={card}
-              onClick={() => setLocalSelection(card)}
-              disabled={disabled}
-              className={`
-                w-10 h-16 sm:w-14 sm:h-20 rounded-lg font-bold text-lg shadow-md transition-all duration-200
-                ${
-                  localSelection === card
-                    ? 'bg-blue-600 text-white -translate-y-3 shadow-blue-500/50 ring-2 ring-white'
-                    : 'bg-white text-gray-900 hover:bg-gray-200 hover:-translate-y-1'
-                }
-                ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-              `}
+              onClick={handleConfirm}
+              className="shrink-0 btn btn-primary px-4 py-2 text-sm animate-fade-in-up"
             >
-              {card}
+              ✓ Enviar
             </button>
-          ))}
+          )}
         </div>
       </div>
     </div>

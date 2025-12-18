@@ -1,41 +1,317 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+
+/* ============================================
+   🎨 SCRUM POKER LIVE - Design System
+   Concepto: Clean Corporate / Minimalista
+   ============================================ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Palette */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #dbeafe;
+
+  /* Success / Error */
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --error: #ef4444;
+  --error-light: #fee2e2;
+
+  /* Neutrals */
+  --background: #f8fafc;
+  --background-alt: #f1f5f9;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+
+  /* Text */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07),
+    0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08),
+    0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 40px -4px rgba(0, 0, 0, 0.1);
+
+  /* Card shadows */
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base Styles */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, var(--background) 0%, #eff6ff 100%);
+  color: var(--text-primary);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
 }
 
+/* Fix Next.js portal positioning */
 nextjs-portal {
   left: unset;
   top: unset;
 }
 
+/* ============================================
+   Utility Classes
+   ============================================ */
+
 @layer utilities {
-  .animate-enter-room {
-    animation: enterRoom 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  /* Card & Surface Styles */
+  .card {
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-interactive {
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow var(--transition-normal),
+      transform var(--transition-normal);
+  }
+
+  .card-interactive:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  /* Button Base */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 10px;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--border);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+  }
+
+  /* Input Styles */
+  .input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+
+  .input::placeholder {
+    color: var(--text-muted);
+  }
+
+  /* 3D Transform Utilities */
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
   }
 }
 
+/* ============================================
+   Animations
+   ============================================ */
+
+@layer utilities {
+  /* Fade + Slide Up */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Staggered children animation */
+  .animate-stagger > * {
+    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+  }
+
+  .animate-stagger > *:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .animate-stagger > *:nth-child(2) {
+    animation-delay: 50ms;
+  }
+  .animate-stagger > *:nth-child(3) {
+    animation-delay: 100ms;
+  }
+  .animate-stagger > *:nth-child(4) {
+    animation-delay: 150ms;
+  }
+  .animate-stagger > *:nth-child(5) {
+    animation-delay: 200ms;
+  }
+  .animate-stagger > *:nth-child(6) {
+    animation-delay: 250ms;
+  }
+  .animate-stagger > *:nth-child(7) {
+    animation-delay: 300ms;
+  }
+  .animate-stagger > *:nth-child(8) {
+    animation-delay: 350ms;
+  }
+  .animate-stagger > *:nth-child(9) {
+    animation-delay: 400ms;
+  }
+  .animate-stagger > *:nth-child(10) {
+    animation-delay: 450ms;
+  }
+
+  /* Card flip animation */
+  .animate-flip {
+    animation: cardFlip 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Pulse glow for buttons */
+  .animate-pulse-soft {
+    animation: pulseSoft 2s ease-in-out infinite;
+  }
+
+  /* Confetti particle */
+  .animate-confetti {
+    animation: confettiFall 2s ease-out forwards;
+  }
+
+  /* Bounce in */
+  .animate-bounce-in {
+    animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Slide up for dock */
+  .animate-slide-up {
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardFlip {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+@keyframes pulseSoft {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(400px) rotate(720deg) scale(0.5);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Legacy animation for compatibility */
 @keyframes enterRoom {
   from {
     opacity: 0;
@@ -48,13 +324,7 @@ nextjs-portal {
 }
 
 @layer utilities {
-  .preserve-3d {
-    transform-style: preserve-3d;
-  }
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
-  .rotate-y-180 {
-    transform: rotateY(180deg);
+  .animate-enter-room {
+    animation: enterRoom 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
 }

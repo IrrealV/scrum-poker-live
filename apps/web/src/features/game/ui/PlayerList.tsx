@@ -1,5 +1,8 @@
+'use client';
+
 import { Player } from "@/types/room";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import EmojiAvatar from "./EmojiAvatar";
 
 interface PlayerListProps {
   players: Player[];
@@ -11,38 +14,100 @@ export default function PlayerList({ players, currentUserId, isRevealed }: Playe
   const [parent] = useAutoAnimate();
 
   return (
-    // CAMBIO: Usamos Flexbox en lugar de Grid para centrar filas dinámicamente
-    <div ref={parent} className="flex flex-wrap justify-center gap-4 w-full max-w-6xl px-4">
-      {players.map((p) => (
-        <div
-          key={p.id}
-          className={`animate-enter-room relative flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300 w-24 sm:w-32
-            ${p.id === currentUserId ? "bg-black/40 ring-2 ring-blue-400/50 transform scale-105" : "bg-black/20 hover:bg-black/30"}
-          `}
-        >
-          <div className="mb-2 text-gray-300 font-bold text-xs bg-black/50 px-2 py-0.5 rounded-full shadow-sm truncate max-w-full">
-             {p.name} {p.isAdmin && "👑"}
-          </div>
+    <div 
+      ref={parent} 
+      className="flex flex-wrap justify-center gap-3 sm:gap-4 w-full max-w-4xl px-2"
+    >
+      {players.map((player) => {
+        const isMe = player.id === currentUserId;
+        const hasVoted = player.vote !== null;
 
-          {/* CARTA CON ANIMACIÓN FLIP 3D */}
-          <div className={`
-             relative w-14 h-20 sm:w-16 sm:h-24 rounded-lg flex items-center justify-center shadow-2xl transition-all duration-700 preserve-3d
-             ${/* Aplicamos rotación si está revelada */ ""}
-             ${isRevealed && p.vote ? "rotate-y-180 bg-white" : "bg-linear-to-br from-red-700 to-red-900 border-2 border-white/20"}
-             ${p.vote && !isRevealed ? "translate-y-2 shadow-black/50" : ""}
-             ${!p.vote ? "opacity-30 border-dashed border-gray-500 bg-transparent" : ""}
-          `}>
-             {isRevealed && p.vote ? (
-               // TRUCO: Rotamos el texto también 180deg para que al girar la carta, el número se vea derecho
-               <span className="text-2xl font-black font-mono text-gray-900 rotate-y-180 backface-hidden">{p.vote}</span>
-             ) : p.vote ? (
-               <div className="w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
-             ) : (
-                <span className="text-2xl opacity-0">.</span>
-             )}
+        return (
+          <div
+            key={player.id}
+            className={`
+              animate-fade-in-up
+              flex flex-col items-center
+              p-3 rounded-xl
+              transition-all duration-300
+              w-20 sm:w-24
+              ${isMe 
+                ? 'bg-(--primary-light) ring-2 ring-(--primary) ring-opacity-50' 
+                : 'bg-white shadow-sm'
+              }
+            `}
+          >
+            {/* Avatar + Name */}
+            <div className="relative mb-2">
+              <EmojiAvatar odUserId={player.id} size="md" />
+              {player.isAdmin && (
+                <span 
+                  className="absolute -top-1 -right-2 text-sm"
+                  title="Administrador"
+                >
+                  👑
+                </span>
+              )}
+            </div>
+            
+            <span className="text-xs font-medium text-(--text-primary) truncate max-w-full text-center mb-2">
+              {player.name}
+              {isMe && <span className="text-(--text-muted)"> (tú)</span>}
+            </span>
+
+            {/* Card */}
+            <div 
+              className={`
+                perspective-1000
+                w-10 h-14 sm:w-12 sm:h-16
+                rounded-lg
+                transition-all duration-500
+                preserve-3d
+                ${isRevealed && hasVoted ? 'rotate-y-180' : ''}
+              `}
+            >
+              {/* Card Inner */}
+              <div className="relative w-full h-full preserve-3d">
+                {/* Card Back (visible when not revealed) */}
+                <div 
+                  className={`
+                    absolute inset-0 backface-hidden
+                    rounded-lg
+                    flex items-center justify-center
+                    transition-all duration-300
+                    ${hasVoted 
+                      ? 'bg-linear-to-br from-(--primary) to-indigo-600 shadow-md' 
+                      : 'bg-(--background-alt) border-2 border-dashed border-(--border)'
+                    }
+                  `}
+                >
+                  {hasVoted ? (
+                    <span className="text-white text-lg">✓</span>
+                  ) : (
+                    <span className="text-(--text-muted) text-lg">?</span>
+                  )}
+                </div>
+
+                {/* Card Front (visible when revealed) */}
+                <div 
+                  className={`
+                    absolute inset-0 backface-hidden rotate-y-180
+                    rounded-lg
+                    bg-white
+                    border-2 border-(--border)
+                    flex items-center justify-center
+                    shadow-md
+                  `}
+                >
+                  <span className="text-xl sm:text-2xl font-bold text-(--text-primary)">
+                    {player.vote || '-'}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

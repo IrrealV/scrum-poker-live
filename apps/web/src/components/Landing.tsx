@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 
 interface LandingProps {
@@ -8,55 +10,131 @@ interface LandingProps {
 export default function Landing({ onCreate, onJoin }: LandingProps) {
   const [name, setName] = useState('');
   const [roomId, setRoomId] = useState('');
+  const [mode, setMode] = useState<'create' | 'join'>('create');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mode === 'create' && name) {
+      onCreate(name);
+    } else if (mode === 'join' && name && roomId.length === 4) {
+      onJoin(name, roomId);
+    }
+  };
 
   return (
-    <div className="w-full max-w-md p-8 bg-gray-800 rounded-xl border border-gray-700 shadow-2xl">
-      <h2 className="text-3xl font-bold text-center mb-8 text-white">
-        ScrumPoker Live
-      </h2>
-
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-400 mb-2">
-            Tu Nombre
-          </label>
-          <input
-            type="text"
-            value={name}
-            maxLength={10}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 outline-none transition"
-            placeholder="Ej: Maelle"
-          />
+    <div className="w-full min-h-screen flex items-center justify-center p-4">
+      {/* Main Card */}
+      <div className="card w-full max-w-md p-8 animate-fade-in-up">
+        {/* Logo / Brand */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-(--primary-light) rounded-2xl mb-4">
+            <span className="text-3xl">🃏</span>
+          </div>
+          <h1 className="text-2xl font-bold text-(--text-primary) tracking-tight">
+            Scrum Poker
+          </h1>
+          <p className="text-(--text-secondary) mt-1 text-sm">
+            Estimación ágil en tiempo real
+          </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            onClick={() => name && onCreate(name)}
-            disabled={!name}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-semibold text-white transition"
-          >
-            Crear Sala
-          </button>
-
-          <div className="flex flex-col gap-2">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Name Input */}
+          <div>
+            <label 
+              htmlFor="name" 
+              className="block text-sm font-medium text-(--text-secondary) mb-2"
+            >
+              Tu nombre
+            </label>
             <input
+              id="name"
               type="text"
-              value={roomId}
-              maxLength={4}
-              onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white text-center tracking-widest uppercase focus:ring-2 focus:ring-purple-500 outline-none text-sm"
-              placeholder="CÓDIGO"
+              value={name}
+              maxLength={12}
+              onChange={(e) => setName(e.target.value)}
+              className="input"
+              placeholder="Ej: María García"
+              autoComplete="off"
             />
+          </div>
+
+          {/* Mode Toggle */}
+          <div className="flex gap-2 p-1 bg-(--background-alt) rounded-xl">
             <button
-              onClick={() => name && roomId && onJoin(name, roomId)}
-              disabled={!name || !roomId || roomId.length !== 4}
-              className="w-full py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-semibold text-white text-sm transition"
+              type="button"
+              onClick={() => setMode('create')}
+              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
+                mode === 'create'
+                  ? 'bg-white text-(--text-primary) shadow-sm'
+                  : 'text-(--text-secondary) hover:text-(--text-primary)'
+              }`}
+            >
+              Crear sala
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('join')}
+              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
+                mode === 'join'
+                  ? 'bg-white text-(--text-primary) shadow-sm'
+                  : 'text-(--text-secondary) hover:text-(--text-primary)'
+              }`}
             >
               Unirse
             </button>
           </div>
-        </div>
+
+          {/* Room Code (only when joining) */}
+          {mode === 'join' && (
+            <div className="animate-fade-in-up">
+              <label 
+                htmlFor="roomId" 
+                className="block text-sm font-medium text-(--text-secondary) mb-2"
+              >
+                Código de sala
+              </label>
+              <input
+                id="roomId"
+                type="text"
+                value={roomId}
+                maxLength={4}
+                onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+                className="input text-center tracking-[0.3em] uppercase font-mono text-lg"
+                placeholder="ABCD"
+                autoComplete="off"
+              />
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={!name || (mode === 'join' && roomId.length !== 4)}
+            className="btn btn-primary w-full py-3.5 text-base"
+          >
+            {mode === 'create' ? (
+              <>
+                <span className="mr-2">✨</span>
+                Crear nueva sala
+              </>
+            ) : (
+              <>
+                <span className="mr-2">🚀</span>
+                Unirse a la sala
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Footer hint */}
+        <p className="text-center text-xs text-(--text-muted) mt-6">
+          {mode === 'create' 
+            ? 'Serás el administrador de la sala'
+            : 'Pide el código a quien creó la sala'
+          }
+        </p>
       </div>
     </div>
   );
