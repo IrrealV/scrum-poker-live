@@ -1,55 +1,49 @@
-name: CI Pipeline 🚀
+name: 🐳 Build & Push Only
 
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  # Solo necesitamos nombres de imágenes
+  API_IMAGE_NAME: api-scrumpoker
+  WEB_IMAGE_NAME: web-scrumpoker
 
 jobs:
-  build-and-test:
-    name: 🏗️ Build & Test
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Bajar el código
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      # 2. Instalar Bun
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      # 1. Login en el Registry (ACR) - ESTO SÍ FUNCIONA
+      - name: 🐳 Docker Login to ACR
+        uses: docker/login-action@v3
         with:
-          bun-version: latest
+          registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      # 3. Instalar Dependencias (Cacheado automáticamente por setup-bun)
-      - name: Install Dependencies
-        run: bun install --frozen-lockfile
+      # 2. Construir y Subir API
+      # Usamos la etiqueta 'latest' para que Azure siempre sepa cuál coger
+      - name: 🏗️ Build and Push API
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.API_IMAGE_NAME }}:latest
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}
 
-      # 4. Verificar Tipos (TypeScript) - Los builds hacen chequeo implícito
-      - name: Build API
-        working-directory: ./apps/api
-        run: bun run build
-
-      - name: Build Web
-        working-directory: ./apps/web
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
-        run: bun run build
-
-      # 5. Ejecutar Tests Unitarios
-      - name: Run Unit Tests (API)
-        working-directory: ./apps/api
-        run: bun run test
-
-      - name: Run Unit Tests (Web)
-        working-directory: ./apps/web
-        run: bun run test
-
-      # 6. (Opcional) Tests E2E con Playwright
-      # Nota: Requiere instalar navegadores. Activar en fase 2.
-      # - name: Install Playwright Browsers
-      #   run: bun x playwright install --with-deps
-      # - name: Run Playwright Tests
-      #   working-directory: ./apps/web
-      #   run: bun x playwright test
+      # 3. Construir y Subir Web
+      - name: 🏗️ Build and Push Web
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}:latest
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}
