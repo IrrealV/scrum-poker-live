@@ -1,0 +1,54 @@
+name: CI Pipeline 🚀
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    name: 🏗️ Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Bajar el código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Instalar Bun
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      # 3. Instalar Dependencias (Cacheado para velocidad)
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      # 4. Verificar Tipos (TypeScript)
+      # Esto detecta errores como el que vimos antes de "Cannot find module"
+      - name: Type Check (API)
+        working-directory: ./apps/api
+        run: bun run build # El build de NestJS hace chequeo de tipos implícito
+
+      - name: Type Check (Web)
+        working-directory: ./apps/web
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+        run: bun run build # Next.js también chequea tipos al compilar
+
+      # 5. Ejecutar Tests Unitarios (Jest en API)
+      # (Asumiendo que tienes tests unitarios básicos en la API)
+      - name: Run Unit Tests (API)
+        working-directory: ./apps/api
+        run: bun run test
+
+    # 6. (Opcional) Tests E2E con Playwright
+    # Nota: Esto requiere instalar navegadores. De momento lo dejo comentado
+    # para que tu primer pase sea rápido. Lo activaremos en la fase 2.
+    # - name: Install Playwright Browsers
+    #   run: bun x playwright install --with-deps
+    # - name: Run Playwright Tests
+    #   working-directory: ./apps/web
+    #   run: bun x playwright test
