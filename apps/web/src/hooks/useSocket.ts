@@ -39,7 +39,9 @@ export const useSocket = () => {
   const [transport, setTransport] = useState('N/A');
 
   useEffect(() => {
-    const socketInstance = io('http://localhost:4000', {
+    const socketURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+    const socketInstance = io(socketURL, {
       autoConnect: true,
     });
 
