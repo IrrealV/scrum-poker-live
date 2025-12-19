@@ -39,17 +39,14 @@ export default function VotingDeck({ onVote, currentVote, disabled, deckType }: 
   }
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-(--border) shadow-lg py-4 px-2 animate-slide-up overflow-visible">
-      <div className="max-w-4xl mx-auto">
+    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-(--border) shadow-lg py-4 animate-slide-up">
+      <div className="w-full">
         {/* Mobile: Column layout | Desktop: Row layout */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center sm:justify-center gap-3">
           
-          {/* Cards container - horizontal scroll only, no vertical clipping */}
-          <div 
-            className="w-full sm:w-auto flex justify-center"
-            style={{ overflowX: 'auto', overflowY: 'visible' }}
-          >
-            <div className="flex items-center gap-1.5 px-2 py-2">
+          {/* Cards container - horizontal scroll on mobile */}
+          <div className="w-full sm:w-auto overflow-x-auto">
+            <div className="flex items-center gap-1.5 px-4 py-2 w-max sm:w-auto sm:mx-auto">
               {cards.map((card) => {
                 const isSelected = localSelection === card;
                 
@@ -81,12 +78,14 @@ export default function VotingDeck({ onVote, currentVote, disabled, deckType }: 
 
           {/* Confirm button - Mobile: below | Desktop: right side */}
           {localSelection && (
-            <button
-              onClick={handleConfirm}
-              className="shrink-0 btn btn-primary px-6 py-2.5 text-sm animate-fade-in-up"
-            >
-              ✓ Enviar voto
-            </button>
+            <div className="px-4 sm:px-0">
+              <button
+                onClick={handleConfirm}
+                className="shrink-0 btn btn-primary px-6 py-2.5 text-sm animate-fade-in-up"
+              >
+                ✓ Enviar voto
+              </button>
+            </div>
           )}
         </div>
       </div>

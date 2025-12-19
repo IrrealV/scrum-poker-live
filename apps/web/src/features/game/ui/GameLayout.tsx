@@ -83,10 +83,11 @@ export default function GameLayout({ room, currentUserId, isAdmin, average, acti
           {/* Leave Room Button */}
           <button
             onClick={actions.leave}
-            className="p-2 bg-(--error-light) hover:bg-(--error) text-(--error) hover:text-white rounded-full transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 bg-(--error-light) hover:bg-(--error) text-(--error) hover:text-white rounded-full transition-all text-sm font-medium"
             title="Salir de la sala"
           >
             🚪
+            <span className="sm:hidden">Salir</span>
           </button>
         </div>
       </header>
