@@ -40,3 +40,6 @@ jobs:
           containerAppName: web-scrumpoker
           resourceGroup: rg-scrumpoker
           imageToBuild: acrscrumpoker.azurecr.io/web-scrumpoker:${{ github.sha }}
+          buildArguments: |
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+            NEXT_TELEMETRY_DISABLED=1
