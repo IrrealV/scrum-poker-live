@@ -22,33 +22,34 @@ jobs:
         with:
           bun-version: latest
 
-      # 3. Instalar Dependencias (Cacheado para velocidad)
+      # 3. Instalar Dependencias (Cacheado automáticamente por setup-bun)
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
-      # 4. Verificar Tipos (TypeScript)
-      # Esto detecta errores como el que vimos antes de "Cannot find module"
-      - name: Type Check (API)
+      # 4. Verificar Tipos (TypeScript) - Los builds hacen chequeo implícito
+      - name: Build API
         working-directory: ./apps/api
-        run: bun run build # El build de NestJS hace chequeo de tipos implícito
+        run: bun run build
 
-      - name: Type Check (Web)
+      - name: Build Web
         working-directory: ./apps/web
         env:
           NEXT_TELEMETRY_DISABLED: 1
-        run: bun run build # Next.js también chequea tipos al compilar
+        run: bun run build
 
-      # 5. Ejecutar Tests Unitarios (Jest en API)
-      # (Asumiendo que tienes tests unitarios básicos en la API)
+      # 5. Ejecutar Tests Unitarios
       - name: Run Unit Tests (API)
         working-directory: ./apps/api
         run: bun run test
 
-    # 6. (Opcional) Tests E2E con Playwright
-    # Nota: Esto requiere instalar navegadores. De momento lo dejo comentado
-    # para que tu primer pase sea rápido. Lo activaremos en la fase 2.
-    # - name: Install Playwright Browsers
-    #   run: bun x playwright install --with-deps
-    # - name: Run Playwright Tests
-    #   working-directory: ./apps/web
-    #   run: bun x playwright test
+      - name: Run Unit Tests (Web)
+        working-directory: ./apps/web
+        run: bun run test
+
+      # 6. (Opcional) Tests E2E con Playwright
+      # Nota: Requiere instalar navegadores. Activar en fase 2.
+      # - name: Install Playwright Browsers
+      #   run: bun x playwright install --with-deps
+      # - name: Run Playwright Tests
+      #   working-directory: ./apps/web
+      #   run: bun x playwright test
