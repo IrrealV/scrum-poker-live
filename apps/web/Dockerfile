@@ -12,11 +12,18 @@ COPY apps/web/package.json ./apps/web/
 COPY apps/api/package.json ./apps/api/
 COPY packages/shared/package.json ./packages/shared/
 
+
+
 # Instalamos dependencias
 RUN bun install --frozen-lockfile
 
 # Copiamos todo el código fuente
 COPY . .
+
+# Aceptamos la URL como argumento de construcción
+ARG NEXT_PUBLIC_API_URL
+# La convertimos en variable de entorno para el build
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 # Desactivamos telemetría de Next.js
 ENV NEXT_TELEMETRY_DISABLED=1

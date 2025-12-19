@@ -44,6 +44,10 @@ jobs:
           context: .
           file: ./apps/web/Dockerfile
           push: true
+          # Pasamos la URL de la API como argumento de construcción
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+            NEXT_TELEMETRY_DISABLED=1
           tags: |
             ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}:latest
             ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}
