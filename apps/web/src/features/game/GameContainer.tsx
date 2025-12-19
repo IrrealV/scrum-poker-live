@@ -9,9 +9,10 @@ interface GameTableProps {
   onReveal?: () => void;
   onReset?: () => void;
   onUpdateTopic?: (topic: string) => void;
+  onLeave?: () => void;
 }
 
-export default function GameContainer({ room, currentUserId, onVote, onReveal, onReset, onUpdateTopic }: GameTableProps) {
+export default function GameContainer({ room, currentUserId, onVote, onReveal, onReset, onUpdateTopic, onLeave }: GameTableProps) {
   const me = room.players.find((p) => p.id === currentUserId);
   const isAdmin = !!me?.isAdmin;
 
@@ -50,6 +51,7 @@ export default function GameContainer({ room, currentUserId, onVote, onReveal, o
     reveal: handleReveal,
     reset: handleReset,
     updateTopic: onUpdateTopic,
+    leave: onLeave,
   };
 
   return (

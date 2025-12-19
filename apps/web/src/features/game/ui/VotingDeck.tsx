@@ -39,47 +39,53 @@ export default function VotingDeck({ onVote, currentVote, disabled, deckType }: 
   }
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-(--border) shadow-lg py-5 px-2 animate-slide-up">
+    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-(--border) shadow-lg py-4 px-2 animate-slide-up overflow-visible">
       <div className="max-w-4xl mx-auto">
-        {/* Single row: Cards + Confirm button */}
-        <div className="flex items-center justify-center gap-2">
-          {/* Cards - All in one line */}
-          <div className="flex items-end gap-1.5 pt-3 overflow-visible">
-            {cards.map((card) => {
-              const isSelected = localSelection === card;
-              
-              return (
-                <button
-                  key={card}
-                  onClick={() => setLocalSelection(card)}
-                  disabled={disabled}
-                  className={`
-                    shrink-0
-                    w-9 h-12 sm:w-10 sm:h-14
-                    rounded-lg
-                    font-bold text-sm sm:text-base
-                    transition-all duration-200
-                    border-2
-                    ${isSelected
-                      ? 'bg-(--primary) text-white border-(--primary) -translate-y-1.5 shadow-md shadow-(--primary)/30'
-                      : 'bg-white text-(--text-primary) border-(--border) hover:border-(--primary) hover:-translate-y-0.5'
-                    }
-                    ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                  `}
-                >
-                  {card}
-                </button>
-              );
-            })}
+        {/* Mobile: Column layout | Desktop: Row layout */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          
+          {/* Cards container - horizontal scroll only, no vertical clipping */}
+          <div 
+            className="w-full sm:w-auto flex justify-center"
+            style={{ overflowX: 'auto', overflowY: 'visible' }}
+          >
+            <div className="flex items-center gap-1.5 px-2 py-2">
+              {cards.map((card) => {
+                const isSelected = localSelection === card;
+                
+                return (
+                  <button
+                    key={card}
+                    onClick={() => setLocalSelection(card)}
+                    disabled={disabled}
+                    className={`
+                      shrink-0
+                      w-10 h-14
+                      rounded-lg
+                      font-bold text-sm
+                      transition-all duration-200
+                      border-2
+                      ${isSelected
+                        ? 'bg-(--primary) text-white border-(--primary) ring-2 ring-(--primary) ring-offset-2'
+                        : 'bg-white text-(--text-primary) border-(--border) hover:border-(--primary)'
+                      }
+                      ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                    `}
+                  >
+                    {card}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Confirm button - appears when selected */}
+          {/* Confirm button - Mobile: below | Desktop: right side */}
           {localSelection && (
             <button
               onClick={handleConfirm}
-              className="shrink-0 btn btn-primary px-4 py-2 text-sm animate-fade-in-up"
+              className="shrink-0 btn btn-primary px-6 py-2.5 text-sm animate-fade-in-up"
             >
-              ✓ Enviar
+              ✓ Enviar voto
             </button>
           )}
         </div>

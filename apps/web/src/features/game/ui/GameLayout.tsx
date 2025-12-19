@@ -17,6 +17,7 @@ interface GameUIProps {
     reveal: () => void;
     reset: () => void;
     updateTopic?: (topic: string) => void;
+    leave?: () => void;
   };
 }
 
@@ -63,20 +64,31 @@ export default function GameLayout({ room, currentUserId, isAdmin, average, acti
           </span>
         </div>
 
-        {/* Room Code Badge */}
-        <button
-          onClick={copyRoomId}
-          className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-(--border) hover:shadow-md transition-all group"
-          title="Click para copiar código"
-        >
-          <span className="text-xs font-medium text-(--text-secondary)">SALA</span>
-          <span className="font-mono font-bold text-(--text-primary) tracking-widest">
-            {room.id}
-          </span>
-          <span className="text-(--text-muted) group-hover:text-(--primary) transition-colors">
-          📋
-          </span>
-        </button>
+        {/* Room Code Badge + Leave Button */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={copyRoomId}
+            className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-(--border) hover:shadow-md transition-all group"
+            title="Click para copiar código"
+          >
+            <span className="text-xs font-medium text-(--text-secondary)">SALA</span>
+            <span className="font-mono font-bold text-(--text-primary) tracking-widest">
+              {room.id}
+            </span>
+            <span className="text-(--text-muted) group-hover:text-(--primary) transition-colors">
+            📋
+            </span>
+          </button>
+
+          {/* Leave Room Button */}
+          <button
+            onClick={actions.leave}
+            className="p-2 bg-(--error-light) hover:bg-(--error) text-(--error) hover:text-white rounded-full transition-all"
+            title="Salir de la sala"
+          >
+            🚪
+          </button>
+        </div>
       </header>
 
       {/* Topic Section */}

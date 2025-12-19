@@ -96,6 +96,12 @@ export default function Home() {
     if (room?.id) socket?.emit("update_topic", { roomId: room.id, topic });
   };
 
+  const handleLeave = () => {
+    socket?.emit("leave_room");
+    clearRoomId();
+    setRoom(null);
+  };
+
   // Loading / reconnecting state
   if (!isConnected || isReconnecting) {
     return (
@@ -124,6 +130,7 @@ export default function Home() {
           onReveal={handleReveal}
           onReset={handleReset}
           onUpdateTopic={handleUpdateTopic}
+          onLeave={handleLeave}
         />
       )}
     </main>
