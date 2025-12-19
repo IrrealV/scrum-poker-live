@@ -9,7 +9,7 @@ async function bootstrap() {
 
   // 2. Habilitar CORS para que el Frontend (puerto 3000) pueda llamar aquí
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', process.env.FRONTEND_URL],
   });
 
   // 3. Puerto 4000 para evitar conflictos
