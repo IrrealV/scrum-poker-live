@@ -1,28 +1,26 @@
 name: Trigger auto deployment for api-scrumpoker
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
-    branches: 
-      [ main ]
+    branches:
+      - main
     paths:
-    - '**'
-    - '.github/workflows/api-scrumpoker-AutoDeployTrigger-c409fe03-15be-4afc-9f7f-77a8ebb48149.yml'
+      - "apps/api/**"
+      - "packages/shared/**"
+      - ".github/workflows/api-scrumpoker-AutoDeployTrigger-c409fe03-15be-4afc-9f7f-77a8ebb48149.yml"
 
-  # Allow manual trigger 
-  workflow_dispatch:      
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout to the branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Azure Login
         uses: azure/login@v2
@@ -35,15 +33,10 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
+          dockerfilePath: ./apps/api/Dockerfile
           registryUrl: acrscrumpoker.azurecr.io
           registryUsername: ${{ secrets.APISCRUMPOKER_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.APISCRUMPOKER_REGISTRY_PASSWORD }}
           containerAppName: api-scrumpoker
           resourceGroup: rg-scrumpoker
           imageToBuild: acrscrumpoker.azurecr.io/api-scrumpoker:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
-
-
