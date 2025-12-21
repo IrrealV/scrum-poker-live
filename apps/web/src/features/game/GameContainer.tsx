@@ -1,6 +1,33 @@
-import { Room } from "@/types/room";
+import { Room, DeckType } from "@/types/room";
 import GameUI from "./ui/GameLayout";
 import toast from "react-hot-toast";
+
+// T-shirt size to numeric value mapping
+const TSHIRT_VALUES: Record<string, number> = {
+  'XS': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5, 'XXL': 6
+};
+
+// Thresholds for mapping numeric average back to t-shirt size
+const VALUE_TO_TSHIRT: [number, string][] = [
+  [1.5, 'XS'], [2.5, 'S'], [3.5, 'M'], [4.5, 'L'], [5.5, 'XL'], [Infinity, 'XXL']
+];
+
+function calculateAverage(votes: string[], deckType: DeckType): string {
+  if (votes.length === 0) return deckType === 'tshirt' ? '-' : '0';
+  
+  if (deckType === 'tshirt') {
+    const numericVotes = votes.map(v => TSHIRT_VALUES[v]).filter(v => v !== undefined);
+    if (numericVotes.length === 0) return '-';
+    const avg = numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length;
+    const result = VALUE_TO_TSHIRT.find(([threshold]) => avg < threshold);
+    return result ? result[1] : 'XXL';
+  }
+  
+  const numericVotes = votes.map(Number).filter(v => !isNaN(v));
+  return numericVotes.length > 0 
+    ? (numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length).toFixed(1)
+    : '0';
+}
 
 interface GameTableProps {
   room: Room;
@@ -16,10 +43,8 @@ export default function GameContainer({ room, currentUserId, onVote, onReveal, o
   const me = room.players.find((p) => p.id === currentUserId);
   const isAdmin = !!me?.isAdmin;
 
-  const votes = room.players.map(p => p.vote).filter(v => v !== null && v !== "?" && v !== "☕");
-  const average = votes.length > 0 
-    ? (votes.reduce((a, b) => a + Number(b), 0) / votes.length).toFixed(1) 
-    : "0";
+  const votes = room.players.map(p => p.vote).filter(v => v !== null && v !== "?" && v !== "☕") as string[];
+  const average = calculateAverage(votes, room.deckType);
 
   const handleReveal = () => {
     if (!onReveal) return;
