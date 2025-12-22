@@ -160,6 +160,19 @@ export default function Landing({ onCreate, onJoin }: LandingProps) {
           }
         </p>
       </div>
+
+      {/* Credits footer */}
+      <p className="text-center text-xs text-(--text-muted) mt-8">
+        Hecho con ❤️ por{' '}
+        <a 
+          href="https://github.com/IrrealV" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-(--primary) hover:underline"
+        >
+          Víctor M. (IrrealV)
+        </a>
+      </p>
     </div>
   );
 }
