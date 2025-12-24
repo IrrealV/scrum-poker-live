@@ -168,12 +168,12 @@ export default function Landing({ onCreate, onJoin }: LandingProps) {
       <footer className="py-4 text-center text-xs text-(--text-muted) bg-slate-200">
         Hecho con ❤️ por{' '}
         <a 
-          href="https://github.com/IrrealV" 
+          href="https://victorheras.me" 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-(--primary) hover:underline"
         >
-          Víctor M. (IrrealV)
+          Victor M. (IrrealV)
         </a>
       </footer>
     </div>
