@@ -1,5 +1,7 @@
 steps:
+  # Backend API
   - name: "gcr.io/cloud-builders/docker"
+    id: "build-api"
     args:
       - "build"
       - "-t"
@@ -9,8 +11,28 @@ steps:
       - "-f"
       - "apps/api/Dockerfile"
       - "."
+
+  # Frontend Web
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build-web"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/scrum-web:${_TAG}"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/scrum-web:latest"
+      - "--build-arg"
+      - "NEXT_PUBLIC_API_URL=${_API_URL}"
+      - "-f"
+      - "apps/web/Dockerfile"
+      - "."
+
 images:
   - "gcr.io/$PROJECT_ID/scrum-api:${_TAG}"
   - "gcr.io/$PROJECT_ID/scrum-api:latest"
+  - "gcr.io/$PROJECT_ID/scrum-web:${_TAG}"
+  - "gcr.io/$PROJECT_ID/scrum-web:latest"
+
 substitutions:
   _TAG: "latest"
+  _API_URL: "https://scrum-api-386638224925.europe-southwest1.run.app"
