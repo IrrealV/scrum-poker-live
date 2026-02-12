@@ -1,0 +1,16 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/scrum-api:${_TAG}"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/scrum-api:latest"
+      - "-f"
+      - "apps/api/Dockerfile"
+      - "."
+images:
+  - "gcr.io/$PROJECT_ID/scrum-api:${_TAG}"
+  - "gcr.io/$PROJECT_ID/scrum-api:latest"
+substitutions:
+  _TAG: "latest"
